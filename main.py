@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
+from tkinter import ttk
 import pandas as pd
 import os
 
@@ -193,23 +194,6 @@ def update_student():
 
     update_window.mainloop()
 
-def print_grades():
-    if not os.path.exists('students.csv'):
-        messagebox.showwarning("경고", "학생 데이터가 없습니다.")
-        return
-
-    df = pd.read_csv('students.csv')
-
-    # Calculate the average grades for each student
-    df['평균성적'] = df[['국어', '수학', '영어']].mean(axis=1)
-
-    median_grades = df[['국어', '수학', '영어']].median()
-    standard_deviation = df[['국어', '수학', '영어']].std().mean()
-
-    messagebox.showinfo("성적 출력", f"각 과목의 중간값: {median_grades.to_dict()}\n"
-                                    f"전체 학생의 표준편차: {standard_deviation}\n"
-                                    f"각 학생의 평균 성적: {df['평균성적'].to_dict()}")
-
 def create_button(window, text, font, command, row, column):
     button = Button(window, text=text, font=font, command=command)
     button.grid(row=row, column=column, padx=10, pady=10)
@@ -224,24 +208,58 @@ def print_grades():
         messagebox.showwarning("경고", "학생 데이터가 없습니다.")
         return
 
+    def convert_to_grade(score):
+        if score >= 90:
+            return 'A'
+        elif score >= 80:
+            return 'B'
+        elif score >= 70:
+            return 'C'
+        elif score >= 60:
+            return 'D'
+        else:
+            return 'F'
+
+    # 파일에서 성적 데이터 읽기
+    if not os.path.exists('students.csv'):
+        messagebox.showwarning("경고", "학생 데이터가 없습니다.")
+        exit()
+
     df = pd.read_csv('students.csv')
 
-    max_grades = df[['국어', '수학', '영어']].max()
-    student_averages = df[['국어', '수학', '영어']].mean(axis=1).round(3)
-    standard_deviation = df[['국어', '수학', '영어']].std().mean().round(2)
+# 각 과목의 성적을 등급으로 변환
+    df['이름'] = df['이름'].apply(lambda name: name.upper())
+    df['국어'] = df['국어'].apply(convert_to_grade)
+    df['수학'] = df['수학'].apply(convert_to_grade)
+    df['영어'] = df['영어'].apply(convert_to_grade)
 
-    student_names = df['이름'].tolist()
-    student_grades = dict(zip(student_names, student_averages))
+# 변환된 성적을 테이블 형태로 출력
+    student_grades = df.to_dict(orient='records')
 
-    messagebox.showinfo("성적 출력", f"각 과목의 최고점: {max_grades.to_dict()}\n"
-                                    f"각 학생의 평균: {student_grades}\n"
-                                    f"전체 학생의 표준편차: {standard_deviation}")
+    def display_grades(student_grades):
+    # Create a new window for displaying grades
+        grades_window = Tk()
+        grades_window.title("성적 등급 출력")
+        grades_window.resizable(False, False)
 
+        # Create a Treeview widget
+        tree = ttk.Treeview(grades_window, columns=('이름', '국어', '수학', '영어'), show='headings')
 
-def create_button(window, text, font, command, row, column):
-    button = Button(window, text=text, font=font, command=command)
-    button.grid(row=row, column=column, padx=10, pady=10)
-    return button
+        # Set the column headings
+        tree.heading('이름', text='이름')
+        tree.heading('국어', text='국어')
+        tree.heading('수학', text='수학')
+        tree.heading('영어', text='영어')
+
+        # Insert the data into the Treeview
+        for grades in student_grades:
+            tree.insert('', 'end', values=(grades['이름'], grades['국어'], grades['수학'], grades['영어']))
+
+        tree.grid()
+
+        grades_window.mainloop()
+
+    display_grades(student_grades)
 
 def enter():
     global enter_window
@@ -270,7 +288,7 @@ def enter():
         enter_window.destroy()
         main_window.deiconify()
     # 뒤로가기 버튼
-    back_button = create_button(enter_window, "뒤로가기", ("맑은 고딕", 15), lambda: enter_window.destroy(), 5, 0)
+    back_button = create_button(enter_window, "뒤로가기", ("맑은 고딕", 15), back, 5, 0)
 
     enter_window.mainloop()
 
