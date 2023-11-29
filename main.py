@@ -46,27 +46,19 @@ def add_student():
 
         student_data = {'이름': [name], '국어': [korean], '수학': [math], '영어': [english]}
         df = pd.DataFrame(student_data)
-
-        # Check if the file exists
-        if not os.path.exists('students.csv') or len(pd.read_csv('students.csv')) < 5:
-            # If not, create a new file or if less than 5 students, require 5 students
-            if len(pd.read_csv('students.csv')) < 5:
-                messagebox.showwarning("경고", "학생 5명을 필수로 입력해주세요.")
-                return
-            df.to_csv('students.csv', index=False)
-        else:
-            # If the file exists and has more than 5 students, append the new data without the header
-            df.to_csv('students.csv', mode='a', header=False, index=False)
+        df.to_csv('students.csv', mode='a', header=False, index=False)
 
         messagebox.showinfo("성적 추가", "학생 성적이 추가되었습니다.")
-        add_window.destroy()
-        main_window.deiconify()  # Show the main window after adding a student
 
     # Create a button to save the student's grades
     save_button = Button(add_window, text="저장", command=save_student)
     save_button.grid(row=4, column=0, columnspan=2)
 
-    back_button = Button(add_window, text="뒤로가기", command=add_window.destroy)
+    def back():
+        add_window.destroy()
+        enter_window.deiconify()
+
+    back_button = Button(add_window, text="뒤로가기", command=back)
     back_button.grid(row=5, column=0, columnspan=2)
 
     add_window.mainloop()
@@ -235,11 +227,14 @@ def print_grades():
     df = pd.read_csv('students.csv')
 
     max_grades = df[['국어', '수학', '영어']].max()
-    student_averages = df[['국어', '수학', '영어']].mean(axis=1)
-    standard_deviation = df[['국어', '수학', '영어']].std().mean()
+    student_averages = df[['국어', '수학', '영어']].mean(axis=1).round(3)
+    standard_deviation = df[['국어', '수학', '영어']].std().mean().round(2)
+
+    student_names = df['이름'].tolist()
+    student_grades = dict(zip(student_names, student_averages))
 
     messagebox.showinfo("성적 출력", f"각 과목의 최고점: {max_grades.to_dict()}\n"
-                                    f"각 학생의 평균: {student_averages.to_dict()}\n"
+                                    f"각 학생의 평균: {student_grades}\n"
                                     f"전체 학생의 표준편차: {standard_deviation}")
 
 
@@ -267,6 +262,15 @@ def enter():
 
     # 학생 성적 출력 버튼
     print_button = create_button(enter_window, "학생 성적 출력", ("맑은 고딕", 15), print_grades, 3, 0)
+
+    # 학생 성적 수정 버튼
+    update_button = create_button(enter_window, "학생 성적 수정", ("맑은 고딕", 15), update_student, 4, 0)
+
+    def back():
+        enter_window.destroy()
+        main_window.deiconify()
+    # 뒤로가기 버튼
+    back_button = create_button(enter_window, "뒤로가기", ("맑은 고딕", 15), lambda: enter_window.destroy(), 5, 0)
 
     enter_window.mainloop()
 
