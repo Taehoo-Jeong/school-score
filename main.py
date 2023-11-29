@@ -73,150 +73,6 @@ def add_student():
 
 def delete_student():
     def delete():
-        nonlocal name_entry, delete_window
-
-        name = name_entry.get()
-
-        if name == '':
-            messagebox.showwarning("경고", "학생 이름을 입력해주세요.")
-            return
-
-        if not os.path.exists('students.csv'):
-            messagebox.showwarning("경고", "학생 데이터가 없습니다.")
-            return
-
-        df = pd.read_csv('students.csv')
-
-        if name not in df['이름'].values:
-            messagebox.showwarning("경고", "해당 학생이 존재하지 않습니다.")
-            return
-
-        df = df[df['이름'] != name]
-        df.to_csv('students.csv', index=False)
-
-        messagebox.showinfo("성적 삭제", "학생 성적이 삭제되었습니다.")
-        delete_window.destroy()  # Close the delete_window
-
-    main_window.withdraw()  # Hide the main window before deleting a student
-
-    # Create a new window for deleting students
-    delete_window = Toplevel()
-    delete_window.title("학생 성적 삭제")
-    delete_window.resizable(False, False)
-
-    # Create entry field for the student's name
-    name_label = Label(delete_window, text="이름")
-    name_label.grid(row=0, column=0)
-    name_entry = Entry(delete_window)
-    name_entry.grid(row=0, column=1)
-
-    # Create a button to delete the student's grades
-    delete_button = Button(delete_window, text="삭제", command=delete)
-    delete_button.grid(row=1, column=0, columnspan=2)
-
-    delete_window.mainloop()
-
-
-def add_student():
-    # Create a new window for adding students
-    add_window = Toplevel()
-    add_window.title("학생 성적 추가")
-    add_window.resizable(False, False)
-
-    # Create entry fields for the student's name and grades
-    name_label = Label(add_window, text="이름")
-    name_label.grid(row=0, column=0)
-    name_entry = Entry(add_window)
-    name_entry.grid(row=0, column=1)
-
-    korean_label = Label(add_window, text="국어")
-    korean_label.grid(row=1, column=0)
-    korean_entry = Entry(add_window)
-    korean_entry.grid(row=1, column=1)
-
-    math_label = Label(add_window, text="수학")
-    math_label.grid(row=2, column=0)
-    math_entry = Entry(add_window)
-    math_entry.grid(row=2, column=1)
-
-    english_label = Label(add_window, text="영어")
-    english_label.grid(row=3, column=0)
-    english_entry = Entry(add_window)
-    english_entry.grid(row=3, column=1)
-
-    # Function to save the student's grades to the CSV file
-    def save_student():
-        name = name_entry.get()
-        korean = korean_entry.get()
-        math = math_entry.get()
-        english = english_entry.get()
-
-        if any(value == '' for value in [name, korean, math, english]):
-            messagebox.showwarning("경고", "학생 성적을 모두 입력해주세요.")
-            return
-
-        student_data = {'이름': [name], '국어': [korean], '수학': [math], '영어': [english]}
-        df = pd.DataFrame(student_data)
-
-        # Check if the file exists
-        if not os.path.exists('students.csv'):
-            # If not, create a new file
-            df.to_csv('students.csv', index=False)
-        else:
-            # If the file exists, append the new data without the header
-            df.to_csv('students.csv', mode='a', header=False, index=False)
-
-        messagebox.showinfo("성적 추가", "학생 성적이 추가되었습니다.")
-        add_window.destroy()
-        enter_window.deiconify()
-
-    # Create a button to save the student's grades
-    save_button = Button(add_window, text="저장", command=save_student)
-    save_button.grid(row=4, column=0, columnspan=2)
-
-    back_button = Button(add_window, text="뒤로가기", command=add_window.destroy)
-    back_button.grid(row=5, column=0, columnspan=2)
-
-    add_window.mainloop()
-    def save_student():
-        name = name_entry.get()
-        korean = korean_entry.get()
-        math = math_entry.get()
-        english = english_entry.get()
-
-        if any(value == '' for value in [name, korean, math, english]):
-            messagebox.showwarning("경고", "학생 성적을 모두 입력해주세요.")
-            return
-
-        student_data = {'이름': [name], '국어': [korean], '수학': [math], '영어': [english]}
-        df = pd.DataFrame(student_data)
-
-        # Check if the file exists
-        if not os.path.exists('students.csv') or len(pd.read_csv('students.csv')) < 5:
-            # If not, create a new file or if less than 5 students, require 5 students
-            if len(pd.read_csv('students.csv')) < 5:
-                messagebox.showwarning("경고", "학생 5명을 필수로 입력해주세요.")
-                return
-            df.to_csv('students.csv', index=False)
-        else:
-            # If the file exists and has more than 5 students, append the new data without the header
-            df.to_csv('students.csv', mode='a', header=False, index=False)
-
-        messagebox.showinfo("성적 추가", "학생 성적이 추가되었습니다.")
-        add_window.destroy()
-        enter_window.deiconify()
-
-    # Create a button to save the student's grades
-    save_button = Button(add_window, text="저장", command=save_student)
-    save_button.grid(row=4, column=0, columnspan=2)
-
-    back_button = Button(add_window, text="뒤로가기", command=add_window.destroy)
-    back_button.grid(row=5, column=0, columnspan=2)
-
-    add_window.mainloop()
-
-def delete_student():
-    def delete():
         name = name_entry.get()
 
         if name == '':
@@ -296,8 +152,6 @@ def search_student():
     back_button = Button(search_window, text="뒤로가기", command=back)
     back_button.grid(row=2, column=0, columnspan=2)
     
-    
-    
 def update_student():
     # Create a new window
     update_window = Tk()
@@ -346,6 +200,7 @@ def update_student():
     save_button.grid(row=4, column=0, columnspan=2)
 
     update_window.mainloop()
+
 def print_grades():
     if not os.path.exists('students.csv'):
         messagebox.showwarning("경고", "학생 데이터가 없습니다.")
