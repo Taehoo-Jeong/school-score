@@ -84,48 +84,6 @@ def add_student():
 
     add_window.mainloop()
 
-def delete_student():
-    def delete():
-        name = name_entry.get()
-
-        if name == '':
-            messagebox.showwarning("경고", "학생 이름을 입력해주세요.")
-            return
-
-        if not os.path.exists('students.csv'):
-            messagebox.showwarning("경고", "학생 데이터가 없습니다.")
-            return
-
-        df = pd.read_csv('students.csv')
-
-        if name not in df['이름'].values:
-            messagebox.showwarning("경고", "해당 학생이 존재하지 않습니다.")
-            return
-
-        df = df[df['이름'] != name]
-        df.to_csv('students.csv', index=False)
-
-        messagebox.showinfo("성적 삭제", "학생 성적이 삭제되었습니다.")
-    enter_window.withdraw()
-    delete_window = Toplevel()
-    delete_window.title("학생 성적 삭제")
-    delete_window.resizable(False, False)
-
-    name_label = Label(delete_window, text="이름:", font=("맑은 고딕", 15))
-    name_label.grid(row=0, column=0, padx=10, pady=10)
-    name_entry = Entry(delete_window, font=("맑은 고딕", 15))
-    name_entry.grid(row=0, column=1, padx=10, pady=10)
-
-    delete_button = Button(delete_window, text="삭제", font=("맑은 고딕", 15), command=delete)
-    delete_button.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
-
-    def back():
-        delete_window.destroy()
-        enter_window.deiconify()
-
-    back_button = Button(delete_window, text="뒤로가기", font=("맑은 고딕", 15), command=back)
-    back_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
-
 def search_student():
     def search():
         name = name_entry.get()
@@ -169,6 +127,51 @@ def search_student():
     
     back_button = Button(search_window, text="뒤로가기", command=back)
     back_button.grid(row=2, column=0, columnspan=2)
+
+    search_window.mainloop()
+
+def delete_student():
+    def delete():
+        name = name_entry.get()
+
+        if name == '':
+            messagebox.showwarning("경고", "학생 이름을 입력해주세요.")
+            return
+
+        if not os.path.exists('students.csv'):
+            messagebox.showwarning("경고", "학생 데이터가 없습니다.")
+            return
+
+        df = pd.read_csv('students.csv')
+
+        if name not in df['이름'].values:
+            messagebox.showwarning("경고", "해당 학생이 존재하지 않습니다.")
+            return
+
+        df = df[df['이름'] != name]
+        df.to_csv('students.csv', index=False)
+
+        messagebox.showinfo("성적 삭제", "학생 성적이 삭제되었습니다.")
+    enter_window.withdraw()
+    delete_window = Toplevel()
+    delete_window.title("학생 성적 삭제")
+    delete_window.resizable(False, False)
+
+    name_label = Label(delete_window, text="이름:", font=("맑은 고딕", 15))
+    name_label.grid(row=0, column=0, padx=10, pady=10)
+    name_entry = Entry(delete_window, font=("맑은 고딕", 15))
+    name_entry.grid(row=0, column=1, padx=10, pady=10)
+
+    delete_button = Button(delete_window, text="삭제", font=("맑은 고딕", 15), command=delete)
+    delete_button.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+
+    def back():
+        delete_window.destroy()
+        enter_window.deiconify()
+
+    back_button = Button(delete_window, text="뒤로가기", font=("맑은 고딕", 15), command=back)
+    back_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
+
     
 def update_student():
     # Create a new window
@@ -233,6 +236,14 @@ def print_grades():
         messagebox.showwarning("경고", "학생 데이터가 없습니다.")
         return
 
+    # 파일에서 성적 데이터 읽기
+    df = pd.read_csv('students.csv')
+
+    # 학생 수가 5명 미만일 때 경고 표시
+    if len(df) < 5:
+        messagebox.showwarning("경고", "학생 수가 5명 미만입니다.")
+        return
+
     def convert_to_grade(score):
         if score >= 90:
             return 'A'
@@ -245,13 +256,6 @@ def print_grades():
         else:
             return 'F'
 
-    # 파일에서 성적 데이터 읽기
-    if not os.path.exists('students.csv'):
-        messagebox.showwarning("경고", "학생 데이터가 없습니다.")
-        exit()
-
-    df = pd.read_csv('students.csv')
-
     # 각 과목의 성적을 등급으로 변환
     df['이름'] = df['이름'].apply(lambda name: name.upper())
     df['국어'] = df['국어'].apply(convert_to_grade)
@@ -261,7 +265,7 @@ def print_grades():
     student_grades = df.to_dict(orient='records')
 
     def display_grades(student_grades):
-    # Create a new window for displaying grades
+        # Create a new window for displaying grades
         grades_window = Tk()
         grades_window.title("성적 등급 출력")
         grades_window.resizable(False, False)
@@ -298,7 +302,6 @@ def print_grades():
                             f"영어 최고 점수: {max_scores['영어']}, 최저 점수: {min_scores['영어']}, 평균: {mean_scores['영어']}, 표준편차: {std_dev['영어']}, 중간값: {median_scores['영어']}")
 
         grades_window.mainloop()
-
 
     display_grades(student_grades)
 
