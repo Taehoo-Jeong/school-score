@@ -45,6 +45,25 @@ def add_student():
         if any(value == '' for value in [name, korean, math, english]):
             messagebox.showwarning("경고", "학생 성적을 모두 입력해주세요.")
             return
+        elif not korean.isdigit() or not math.isdigit() or not english.isdigit():
+            messagebox.showwarning("경고", "성적은 숫자로만 입력해주세요.")
+            return
+        elif not (0 <= int(korean) <= 100) or not (0 <= int(math) <= 100) or not (0 <= int(english) <= 100):
+            messagebox.showwarning("경고", "성적은 0과 100 사이의 숫자로 입력해주세요.")
+            return
+        elif not os.path.exists('students.csv'):
+            student_data = {'이름': [name], '국어': [korean], '수학': [math], '영어': [english]}
+            df = pd.DataFrame(student_data)
+            df.to_csv('students.csv', index=False)
+        else:
+            df = pd.read_csv('students.csv')
+            if name in df['이름'].values:
+                messagebox.showwarning("경고", "해당 학생이 이미 존재합니다.")
+                return
+            else:
+                student_data = {'이름': [name], '국어': [korean], '수학': [math], '영어': [english]}
+                df = pd.DataFrame(student_data)
+                df.to_csv('students.csv', mode='a', header=False, index=False)
 
         student_data = {'이름': [name], '국어': [korean], '수학': [math], '영어': [english]}
         df = pd.DataFrame(student_data)
@@ -268,7 +287,7 @@ def print_grades():
         max_scores = df[['국어', '수학', '영어']].max()
         min_scores = df[['국어', '수학', '영어']].min()
         mean_scores = df[['국어', '수학', '영어']].mean()
-        std_dev = df[['국어', '수학', '영어']].std()
+        std_dev = df[['국어', '수학', '영어']].std().round(2)
         # 각 과목의 성적 중간값 계산
         median_scores = df[['국어', '수학', '영어']].median(axis=0)
 
