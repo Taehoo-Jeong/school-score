@@ -265,6 +265,7 @@ def print_grades():
     df['국어'] = df['국어'].apply(convert_to_grade)
     df['수학'] = df['수학'].apply(convert_to_grade)
     df['영어'] = df['영어'].apply(convert_to_grade)
+
     # 변환된 성적을 테이블 형태로 출력
     student_grades = df.to_dict(orient='records')
 
@@ -272,7 +273,7 @@ def print_grades():
 
     df['평균'] = df[['국어', '수학', '영어']].mean(axis=1)
     df['평균'] = df['평균'].round(2)
-    student_average = df.to_dict(orient='records')
+    student_grades = df.to_dict(orient='records')
 
     def display_grades(student_grades):
         # Create a new window for displaying grades
@@ -281,17 +282,18 @@ def print_grades():
         grades_window.resizable(False, False)
 
         # Create a Treeview widget
-        tree = ttk.Treeview(grades_window, columns=('이름', '국어', '수학', '영어'), show='headings')
+        tree = ttk.Treeview(grades_window, columns=('이름', '국어', '수학', '영어', '평균'), show='headings')
 
         # Set the column headings
         tree.heading('이름', text='이름')
         tree.heading('국어', text='국어')
         tree.heading('수학', text='수학')
         tree.heading('영어', text='영어')
+        tree.heading('평균', text='평균')
 
         # Insert the data into the Treeview
         for grades in student_grades:
-            tree.insert('', 'end', values=(grades['이름'], grades['국어'], grades['수학'], grades['영어']))
+            tree.insert('', 'end', values=(grades['이름'], grades['국어'], grades['수학'], grades['영어'], grades['평균']))
         tree.grid()
 
         # 파일에서 성적 데이터 읽기
