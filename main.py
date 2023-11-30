@@ -3,6 +3,7 @@ from tkinter import messagebox
 from tkinter import ttk
 import pandas as pd
 import os
+import numpy as np
 
 main_window = Tk()
 main_window.title("학생 성적 관리 프로그램")
@@ -86,8 +87,6 @@ def delete_student():
         df.to_csv('students.csv', index=False)
 
         messagebox.showinfo("성적 삭제", "학생 성적이 삭제되었습니다.")
-        delete_window.destroy()  # Close the delete_window
-
     enter_window.withdraw()
     delete_window = Toplevel()
     delete_window.title("학생 성적 삭제")
@@ -100,6 +99,13 @@ def delete_student():
 
     delete_button = Button(delete_window, text="삭제", font=("맑은 고딕", 15), command=delete)
     delete_button.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+
+    def back():
+        delete_window.destroy()
+        enter_window.deiconify()
+
+    back_button = Button(delete_window, text="뒤로가기", font=("맑은 고딕", 15), command=back)
+    back_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
 
 def search_student():
     def search():
@@ -227,13 +233,12 @@ def print_grades():
 
     df = pd.read_csv('students.csv')
 
-# 각 과목의 성적을 등급으로 변환
+    # 각 과목의 성적을 등급으로 변환
     df['이름'] = df['이름'].apply(lambda name: name.upper())
     df['국어'] = df['국어'].apply(convert_to_grade)
     df['수학'] = df['수학'].apply(convert_to_grade)
     df['영어'] = df['영어'].apply(convert_to_grade)
-
-# 변환된 성적을 테이블 형태로 출력
+    # 변환된 성적을 테이블 형태로 출력
     student_grades = df.to_dict(orient='records')
 
     def display_grades(student_grades):
@@ -254,10 +259,27 @@ def print_grades():
         # Insert the data into the Treeview
         for grades in student_grades:
             tree.insert('', 'end', values=(grades['이름'], grades['국어'], grades['수학'], grades['영어']))
-
         tree.grid()
 
+        # 파일에서 성적 데이터 읽기
+        df = pd.read_csv('students.csv')
+
+        # 각 과목의 최고, 최저, 평균 성적과 표준편차 계산
+        max_scores = df[['국어', '수학', '영어']].max()
+        min_scores = df[['국어', '수학', '영어']].min()
+        mean_scores = df[['국어', '수학', '영어']].mean()
+        std_dev = df[['국어', '수학', '영어']].std()
+        # 각 과목의 성적 중간값 계산
+        median_scores = df[['국어', '수학', '영어']].median(axis=0)
+
+        # 팝업 창에 결과 추가
+        messagebox.showinfo("성적 정보", 
+                            f"국어 최고 점수: {max_scores['국어']}, 최저 점수: {min_scores['국어']}, 평균: {mean_scores['국어']}, 표준편차: {std_dev['국어']}, 중간값: {median_scores['국어']}\n"
+                            f"수학 최고 점수: {max_scores['수학']}, 최저 점수: {min_scores['수학']}, 평균: {mean_scores['수학']}, 표준편차: {std_dev['수학']}, 중간값: {median_scores['수학']}\n"
+                            f"영어 최고 점수: {max_scores['영어']}, 최저 점수: {min_scores['영어']}, 평균: {mean_scores['영어']}, 표준편차: {std_dev['영어']}, 중간값: {median_scores['영어']}")
+
         grades_window.mainloop()
+
 
     display_grades(student_grades)
 
