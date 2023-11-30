@@ -65,11 +65,15 @@ def add_student():
                 df = pd.DataFrame(student_data)
                 df.to_csv('students.csv', mode='a', header=False, index=False)
 
-        student_data = {'이름': [name], '국어': [korean], '수학': [math], '영어': [english]}
         df = pd.DataFrame(student_data)
         df.to_csv('students.csv', mode='a', header=False, index=False)
 
         messagebox.showinfo("성적 추가", "학생 성적이 추가되었습니다.")
+
+        name_entry.delete(0, END)
+        korean_entry.delete(0, END)
+        math_entry.delete(0, END)
+        english_entry.delete(0, END)
 
     # Create a button to save the student's grades
     save_button = Button(add_window, text="저장", command=save_student)
@@ -264,6 +268,12 @@ def print_grades():
     # 변환된 성적을 테이블 형태로 출력
     student_grades = df.to_dict(orient='records')
 
+    df = pd.read_csv('students.csv')
+
+    df['평균'] = df[['국어', '수학', '영어']].mean(axis=1)
+    df['평균'] = df['평균'].round(2)
+    student_average = df.to_dict(orient='records')
+
     def display_grades(student_grades):
         # Create a new window for displaying grades
         grades_window = Tk()
@@ -315,18 +325,15 @@ def enter():
 
     # 학생 성적 추가 버튼
     add_button = create_button(enter_window, "학생 성적 추가", ("맑은 고딕", 15), add_student, 0, 0)
-
     # 학생 성적 검색 버튼
     search_button = create_button(enter_window, "학생 성적 검색", ("맑은 고딕", 15), search_student, 1, 0)
-
+    # 학생 성적 수정 버튼
+    update_button = create_button(enter_window, "학생 성적 수정", ("맑은 고딕", 15), update_student, 4, 0)
     # 학생 성적 삭제 버튼
     delete_button = create_button(enter_window, "학생 성적 삭제", ("맑은 고딕", 15), delete_student, 2, 0)
-
     # 학생 성적 출력 버튼
     print_button = create_button(enter_window, "학생 성적 출력", ("맑은 고딕", 15), print_grades, 3, 0)
 
-    # 학생 성적 수정 버튼
-    update_button = create_button(enter_window, "학생 성적 수정", ("맑은 고딕", 15), update_student, 4, 0)
 
     def back():
         enter_window.destroy()
