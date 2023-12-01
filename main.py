@@ -65,9 +65,6 @@ def add_student():
                 df = pd.DataFrame(student_data)
                 df.to_csv('students.csv', mode='a', header=False, index=False)
 
-        df = pd.DataFrame(student_data)
-        df.to_csv('students.csv', mode='a', header=False, index=False)
-
         messagebox.showinfo("성적 추가", "학생 성적이 추가되었습니다.")
 
         name_entry.delete(0, END)
@@ -248,6 +245,13 @@ def print_grades():
         messagebox.showwarning("경고", "학생 수가 5명 미만입니다.")
         return
 
+    # 변환된 성적을 테이블 형태로 출력
+    student_grades = df.to_dict(orient='records')
+
+    df = pd.read_csv('students.csv')
+
+    df['평균'] = df[['국어', '수학', '영어']].mean(axis=1)
+    df['평균'] = df['평균'].round(2)
     def convert_to_grade(score):
         if score >= 90:
             return 'A'
@@ -265,14 +269,6 @@ def print_grades():
     df['국어'] = df['국어'].apply(convert_to_grade)
     df['수학'] = df['수학'].apply(convert_to_grade)
     df['영어'] = df['영어'].apply(convert_to_grade)
-
-    # 변환된 성적을 테이블 형태로 출력
-    student_grades = df.to_dict(orient='records')
-
-    df = pd.read_csv('students.csv')
-
-    df['평균'] = df[['국어', '수학', '영어']].mean(axis=1)
-    df['평균'] = df['평균'].round(2)
     student_grades = df.to_dict(orient='records')
 
     def display_grades(student_grades):
