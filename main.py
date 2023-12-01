@@ -281,7 +281,7 @@ def print_grades():
         grades_window.title("성적 등급 출력")
         grades_window.resizable(False, False)
 
-        # Create a Treeview widget
+        #트리뷰 생성
         tree = ttk.Treeview(grades_window, columns=('이름', '국어', '수학', '영어', '평균'), show='headings')
 
         # Set the column headings
@@ -291,7 +291,7 @@ def print_grades():
         tree.heading('영어', text='영어')
         tree.heading('평균', text='평균')
 
-        # Insert the data into the Treeview
+        #트리뷰에 데이터 추가
         for grades in student_grades:
             tree.insert('', 'end', values=(grades['이름'], grades['국어'], grades['수학'], grades['영어'], grades['평균']))
         tree.grid()
