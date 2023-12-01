@@ -3,7 +3,6 @@ from tkinter import messagebox
 from tkinter import ttk
 import pandas as pd
 import os
-import numpy as np
 
 main_window = Tk()
 main_window.title("학생 성적 관리 프로그램")
