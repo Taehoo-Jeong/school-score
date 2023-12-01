@@ -52,7 +52,6 @@ def add_student():
             messagebox.showwarning("경고", "성적은 0과 100 사이의 숫자로 입력해주세요.")
             return
         elif not os.path.exists('students.csv'):
-            student_data = {'이름': [name], '국어': [korean], '수학': [math], '영어': [english]}
             df = pd.DataFrame(student_data)
             df.to_csv('students.csv', index=False)
         else:
