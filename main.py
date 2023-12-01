@@ -214,7 +214,12 @@ def update_student():
         df.loc[df['이름'] == name, '영어'] = english
         df.to_csv('students.csv', index=False)
 
-        messagebox.showinfo("성적 수정", "학생 성적이 수정되었습니다.")
+        if name == '':
+            messagebox.showwarning("경고", "학생 이름을 입력해주세요.")
+            return
+        elif not korean.isdigit() or not math.isdigit() or not english.isdigit():
+            messagebox.showinfo("성적 수정", "학생 성적이 수정되었습니다.")
+            return
         update_window.destroy()
 
     # Create a button to save the updated grades
