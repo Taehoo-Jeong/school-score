@@ -8,6 +8,14 @@ import numpy as np
 main_window = Tk()
 main_window.title("학생 성적 관리 프로그램")
 main_window.resizable(False, False)
+
+global create_button
+
+def create_button(window, text, font, command, row, column, padx, pady):
+    button = Button(window, text=text, font=font, command=command)
+    button.grid(row=row, column=column, padx=padx, pady=pady)
+    return button
+
 def add_student():
     # Create a new window for adding students
     add_window = Toplevel()
@@ -73,16 +81,13 @@ def add_student():
         english_entry.delete(0, END)
 
     # Create a button to save the student's grades
-    save_button = Button(add_window, text="저장", command=save_student)
-    save_button.grid(row=4, column=0, columnspan=2)
-
+    save_button = create_button(add_window, "저장", ("맑은 고딕", 10), save_student, 4, 0, 0, 0)
+    
     def back():
         add_window.destroy()
         enter_window.deiconify()
 
-    back_button = Button(add_window, text="뒤로가기", command=back)
-    back_button.grid(row=5, column=0, columnspan=2)
-
+    back_button = create_button(add_window, "뒤로가기", ("맑은 고딕", 10), back, 4, 1, 0, 0)
     add_window.mainloop()
 
 def search_student():
@@ -123,11 +128,9 @@ def search_student():
     name_entry.grid(row=0, column=1)
 
     # Create a button to search for the student
-    search_button = Button(search_window, text="검색", command=search)
-    search_button.grid(row=1, column=0, columnspan=2)
-    
-    back_button = Button(search_window, text="뒤로가기", command=back)
-    back_button.grid(row=2, column=0, columnspan=2)
+    search_button = create_button(search_window, "검색", ("맑은 고딕", 15), search, 1, 0, 10, 10)
+
+    back_button = create_button(search_window, "뒤로가기", ("맑은 고딕", 15), back, 2, 0, 10, 10)
 
     search_window.mainloop()
 
@@ -163,15 +166,13 @@ def delete_student():
     name_entry = Entry(delete_window, font=("맑은 고딕", 15))
     name_entry.grid(row=0, column=1, padx=10, pady=10)
 
-    delete_button = Button(delete_window, text="삭제", font=("맑은 고딕", 15), command=delete)
-    delete_button.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+    delete_button = create_button(delete_window, "삭제", ("맑은 고딕", 15), delete, 1, 0, 10, 10)
 
     def back():
         delete_window.destroy()
         enter_window.deiconify()
 
-    back_button = Button(delete_window, text="뒤로가기", font=("맑은 고딕", 15), command=back)
-    back_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
+    back_button = create_button(delete_window, "뒤로가기", ("맑은 고딕", 15), back, 2, 0, 10, 10)
 
     
 def update_student():
@@ -223,15 +224,9 @@ def update_student():
         update_window.destroy()
 
     # Create a button to save the updated grades
-    save_button = Button(update_window, text="저장", command=save_updated_student)
-    save_button.grid(row=4, column=0, columnspan=2)
+    save_button = create_button(update_window, "저장", ("맑은 고딕", 10), save_updated_student, 4, 0, 0, 0)
 
     update_window.mainloop()
-
-def create_button(window, text, font, command, row, column):
-    button = Button(window, text=text, font=font, command=command)
-    button.grid(row=row, column=column, padx=10, pady=10)
-    return button
 
 def enter():
     global enter_window
@@ -327,22 +322,21 @@ def enter():
     enter_window.resizable(False, False)
 
     # 학생 성적 추가 버튼
-    add_button = create_button(enter_window, "학생 성적 추가", ("맑은 고딕", 15), add_student, 0, 0)
+    add_button = create_button(enter_window, "학생 성적 추가", ("맑은 고딕", 15), add_student, 0, 0, 10, 10)
     # 학생 성적 검색 버튼
-    search_button = create_button(enter_window, "학생 성적 검색", ("맑은 고딕", 15), search_student, 1, 0)
-    # 학생 성적 수정 버튼
-    update_button = create_button(enter_window, "학생 성적 수정", ("맑은 고딕", 15), update_student, 4, 0)
+    search_button = create_button(enter_window, "학생 성적 검색", ("맑은 고딕", 15), search_student, 1, 0, 10, 10)
     # 학생 성적 삭제 버튼
-    delete_button = create_button(enter_window, "학생 성적 삭제", ("맑은 고딕", 15), delete_student, 2, 0)
+    delete_button = create_button(enter_window, "학생 성적 삭제", ("맑은 고딕", 15), delete_student, 2, 0, 10, 10)
     # 학생 성적 출력 버튼
-    print_button = create_button(enter_window, "학생 성적 출력", ("맑은 고딕", 15), print_grades, 3, 0)
-
+    print_button = create_button(enter_window, "학생 성적 출력", ("맑은 고딕", 15), print_grades, 3, 0, 10, 10)
+    # 학생 성적 수정 버튼
+    update_button = create_button(enter_window, "학생 성적 수정", ("맑은 고딕", 15), update_student, 4, 0, 10, 10)
 
     def back():
         enter_window.destroy()
         main_window.deiconify()
     # 뒤로가기 버튼
-    back_button = create_button(enter_window, "뒤로가기", ("맑은 고딕", 15), back, 5, 0)
+    back_button = create_button(enter_window, "뒤로가기", ("맑은 고딕", 15), back, 5, 0, 10, 10)
 
     enter_window.mainloop()
 
