@@ -8,6 +8,12 @@ import numpy as np
 main_window = Tk()
 main_window.title("학생 성적 관리 프로그램")
 main_window.resizable(False, False)
+
+def create_button(window, text, font, command, row, column, padx, pady):
+    button = Button(window, text=text, font=font, command=command)
+    button.grid(row=row, column=column, padx=padx, pady=pady)
+    return button
+
 def add_student():
     # Create a new window for adding students
     add_window = Toplevel()
