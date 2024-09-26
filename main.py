@@ -40,6 +40,12 @@ def create_input_field(window, label_text, row):
     entry.grid(row=row, column=1)
     return entry
 
+def validate_score(score):
+    if not score.isdigit():
+        return False
+    score_int = int(score)
+    return 0 <= score_int <= 100
+
 def add_student():
     add_window = Toplevel()
     add_window.title("학생 성적 추가")
@@ -59,10 +65,7 @@ def add_student():
         if any(value == '' for value in [name, korean, math, english]):
             messagebox.showwarning("경고", "학생 성적을 모두 입력해주세요.")
             return
-        if not all(value.isdigit() for value in [korean, math, english]):
-            messagebox.showwarning("경고", "성적은 숫자로만 입력해주세요.")
-            return
-        if not all(0 <= int(value) <= 100 for value in [korean, math, english]):
+        if not all(validate_score(value) for value in [korean, math, english]):
             messagebox.showwarning("경고", "성적은 0과 100 사이의 숫자로 입력해주세요.")
             return
 
@@ -85,6 +88,45 @@ def add_student():
     create_button(add_window, "저장", ("맑은 고딕", 10), save_student, 4, 0, 0, 0)
     create_button(add_window, "뒤로가기", ("맑은 고딕", 10), add_window.destroy, 4, 1, 0, 0)
     add_window.mainloop()
+
+def update_student():
+    update_window = Toplevel()
+    update_window.title("학생 성적 수정")
+    update_window.resizable(False, False)
+
+    name_entry = create_input_field(update_window, "이름", 0)
+    korean_entry = create_input_field(update_window, "국어", 1)
+    math_entry = create_input_field(update_window, "수학", 2)
+    english_entry = create_input_field(update_window, "영어", 3)
+
+    def save_updated_student():
+        name = name_entry.get()
+        korean = korean_entry.get()
+        math = math_entry.get()
+        english = english_entry.get()
+
+        if any(value == '' for value in [name, korean, math, english]):
+            messagebox.showwarning("경고", "학생 성적을 모두 입력해주세요.")
+            return
+        if not all(validate_score(value) for value in [korean, math, english]):
+            messagebox.showwarning("경고", "성적은 0과 100 사이의 숫자로 입력해주세요.")
+            return
+
+        df = pd.read_csv('students.csv')
+        if name not in df['이름'].values:
+            messagebox.showwarning("경고", "해당 학생이 존재하지 않습니다.")
+            return
+
+        df.loc[df['이름'] == name, ['국어', '수학', '영어']] = [korean, math, english]
+        df.to_csv('students.csv', index=False)
+
+        messagebox.showinfo("성적 수정", "학생 성적이 수정되었습니다.")
+        for entry in [name_entry, korean_entry, math_entry, english_entry]:
+            entry.delete(0, END)
+
+    create_button(update_window, "수정", ("맑은 고딕", 10), save_updated_student, 4, 0, 0, 0)
+    create_button(update_window, "뒤로가기", ("맑은 고딕", 10), update_window.destroy, 4, 1, 0, 0)
+    update_window.mainloop()
 
 def print_grades():
     if not os.path.exists('students.csv'):
@@ -129,8 +171,9 @@ def enter():
     enter_window.resizable(False, False)
 
     create_button(enter_window, "학생 성적 추가", ("맑은 고딕", 15), add_student, 0, 0, 10, 10)
-    create_button(enter_window, "학생 성적 출력", ("맑은 고딕", 15), print_grades, 1, 0, 10, 10)
-    create_button(enter_window, "뒤로가기", ("맑은 고딕", 15), lambda: [enter_window.destroy(), main_window.deiconify()], 2, 0, 10, 10)
+    create_button(enter_window, "학생 성적 수정", ("맑은 고딕", 15), update_student, 1, 0, 10, 10)
+    create_button(enter_window, "학생 성적 출력", ("맑은 고딕", 15), print_grades, 2, 0, 10, 10)
+    create_button(enter_window, "뒤로가기", ("맑은 고딕", 15), lambda: [enter_window.destroy(), main_window.deiconify()], 3, 0, 10, 10)
 
     enter_window.mainloop()
 
