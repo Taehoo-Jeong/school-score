@@ -3,6 +3,8 @@ from tkinter import messagebox
 from tkinter import ttk
 import pandas as pd
 import os
+import shutil
+import datetime
 
 main_window = Tk()
 main_window.title("학생 성적 관리 프로그램")
@@ -46,6 +48,11 @@ def validate_score(score):
     score_int = int(score)
     return 0 <= score_int <= 100
 
+def backup_csv():
+    if os.path.exists('students.csv'):
+        backup_file = f'students_backup_{datetime.datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
+        shutil.copy('students.csv', backup_file)
+
 def add_student():
     add_window = Toplevel()
     add_window.title("학생 성적 추가")
@@ -81,6 +88,7 @@ def add_student():
                 return
             df.to_csv('students.csv', mode='a', header=False, index=False)
 
+        backup_csv()  # 백업 기능 호출
         messagebox.showinfo("성적 추가", "학생 성적이 추가되었습니다.")
         for entry in [name_entry, korean_entry, math_entry, english_entry]:
             entry.delete(0, END)
@@ -117,6 +125,8 @@ def update_student():
             messagebox.showwarning("경고", "해당 학생이 존재하지 않습니다.")
             return
 
+        # 백업 후 수정
+        backup_csv()
         df.loc[df['이름'] == name, ['국어', '수학', '영어']] = [korean, math, english]
         df.to_csv('students.csv', index=False)
 
